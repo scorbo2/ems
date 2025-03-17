@@ -6,10 +6,10 @@
 
     <groupId>ca.corbett</groupId>
     <artifactId>ems</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>ems</name>
-    <description>Easy Messaging Service - a simple embeddable API for Java applications</description>
+    <description>Easy Messaging Service - a lightweight embeddable API for Java applications</description>
     <url>https://github.com/scorbo2/ems</url>
 
     <licenses>
