@@ -6,7 +6,7 @@ import ca.corbett.ems.server.EMSServer;
  * A built-in handler that clients can use to learn their own client id on an EMSServer.
  *
  * @author scorbo2
- * @since 2024-12-30
+ * @since 2023-11-18
  */
 public class WhoHandler extends AbstractCommandHandler {
 

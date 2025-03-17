@@ -8,7 +8,7 @@ import static ca.corbett.ems.server.EMSServer.DELIMITER;
  * A very simple example CommandHandler that just echoes whatever it receives.
  *
  * @author scorbo2
- * @since 2024-12-30
+ * @since 2023-11-18
  */
 public class EchoHandler extends AbstractCommandHandler {
 

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * can interact with the remote server in a more natural way.
  *
  * @author scorbo2
- * @since 2024-12-30
+ * @since 2023-11-18
  */
 public class EMSClient {
 

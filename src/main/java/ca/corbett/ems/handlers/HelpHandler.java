@@ -15,7 +15,7 @@ import java.util.List;
  * with a brief description of each.
  *
  * @author scorbo2
- * @since 2024-12-30
+ * @since 2023-11-18
  */
 public class HelpHandler extends AbstractCommandHandler {
 
