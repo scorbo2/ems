@@ -283,6 +283,14 @@ public class EMSServer {
         return startupException;
     }
 
+    public int getClientConnectionCount() {
+        return serverThread == null ? 0 : serverThread.clientConnectionCount();
+    }
+
+    public boolean isClientConnected(String clientId) {
+        return serverThread != null && serverThread.isConnected(clientId);
+    }
+
     /**
      * Invoked from our server thread if something goes wrong when it's trying to start up.
      */

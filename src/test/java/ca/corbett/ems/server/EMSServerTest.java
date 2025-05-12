@@ -16,8 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for EMSServer
@@ -249,6 +251,36 @@ public class EMSServerTest {
 
         assertEquals(2, clientsConnected.get());
         assertEquals(2, clientsDisconnected.get());
+    }
+
+    @Test
+    public void testClientConnectionList() throws Exception {
+        EMSClient client1 = new EMSClient();
+        EMSClient client2 = new EMSClient();
+        client1.connect("localhost", TEST_PORT);
+        client2.connect("localhost", TEST_PORT);
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(150);
+        }
+
+        assertTrue(server.isClientConnected("EMSC01"));
+        assertTrue(server.isClientConnected("EMSC02"));
+        assertEquals(3, server.getClientConnectionCount());
+
+        client1.disconnect();
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(150);
+        }
+        assertFalse(server.isClientConnected("EMSC01"));
+        assertTrue(server.isClientConnected("EMSC02"));
+        assertEquals(2, server.getClientConnectionCount());
+
+        client2.disconnect();
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(150);
+        }
+        assertFalse(server.isClientConnected("EMSC02"));
+        assertEquals(1, server.getClientConnectionCount());
     }
 
     private void clientUp() {
