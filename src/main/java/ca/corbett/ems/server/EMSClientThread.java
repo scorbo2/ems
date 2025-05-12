@@ -83,6 +83,11 @@ class EMSClientThread extends Thread {
                     break;
                 }
 
+                // Special case for a client hang-up
+                if (inputLine.trim().equals(EMSServer.DISCONNECTED)) {
+                    break;
+                }
+
                 // Tell the server to execute the command and capture its output:
                 String outputLine = emsServer.executeCommand(clientId, inputLine);
 
@@ -103,6 +108,9 @@ class EMSClientThread extends Thread {
             try {
                 clientSocket.close();
                 clientSocket = null;
+                for (EMSServerSpy spy : serverSpies) {
+                    spy.clientDisconnected(emsServer, clientId);
+                }
             } catch (IOException ioe) {
                 logger.log(Level.SEVERE, "Client thread {0} was unable to shut down client socket.", clientId);
             }

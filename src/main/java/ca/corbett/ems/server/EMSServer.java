@@ -3,6 +3,7 @@ package ca.corbett.ems.server;
 import ca.corbett.ems.handlers.AbstractCommandHandler;
 import ca.corbett.ems.handlers.EchoHandler;
 import ca.corbett.ems.handlers.HelpHandler;
+import ca.corbett.ems.handlers.VersionHandler;
 import ca.corbett.ems.handlers.WhoHandler;
 
 import java.io.IOException;
@@ -77,6 +78,7 @@ public class EMSServer {
     public EMSServer(String host, int port) {
         serverSpies = new ArrayList<>();
         commandHandlers = new HashSet<>();
+        commandHandlers.add(VersionHandler.getInstance());
         commandHandlers.add(new EchoHandler());
         commandHandlers.add(new HelpHandler());
         commandHandlers.add(new WhoHandler());
@@ -108,7 +110,7 @@ public class EMSServer {
      */
     public void stopServer() {
         if (serverThread == null) {
-            logger.log(Level.SEVERE, "Received a stop() command when server is not running; ignored");
+            logger.log(Level.WARNING, "Received a stop() command when server is not running; ignored");
             return;
         }
 

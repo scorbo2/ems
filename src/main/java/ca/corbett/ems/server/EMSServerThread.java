@@ -91,6 +91,7 @@ class EMSServerThread extends Thread {
 
                 // Notify server spies that a new client is starting up:
                 for (EMSServerSpy spy : serverSpies) {
+                    spy.clientConnected(emsServer, clientId);
                     client.addServerSpy(spy);
                 }
 

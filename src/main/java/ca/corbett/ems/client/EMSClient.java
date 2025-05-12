@@ -77,12 +77,18 @@ public class EMSClient {
         if (isConnected) {
             isConnected = false;
             try {
+                if (out != null) {
+                    // Let server know we're gone; don't bother waiting for response:
+                    out.println(EMSServer.DISCONNECTED);
+                }
                 clientSocket.close();
+            } catch (IOException ioe) {
+                logger.log(Level.SEVERE, "EMSClient caught exception while disconnecting", ioe);
+            }
+            finally {
                 clientSocket = null;
                 out = null;
                 in = null;
-            } catch (IOException ioe) {
-                logger.log(Level.SEVERE, "EMSClient caught exception while disconnecting", ioe);
             }
         }
     }

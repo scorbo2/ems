@@ -1,23 +1,23 @@
 package ca.corbett.ems.server;
 
+import ca.corbett.ems.client.EMSClient;
 import ca.corbett.ems.handlers.EchoHandler;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for EMSServer
@@ -35,6 +35,8 @@ public class EMSServerTest {
 
     private String msg1;
     private String msg2;
+    private AtomicInteger clientsConnected;
+    private AtomicInteger clientsDisconnected;
 
     public EMSServerTest() {
     }
@@ -66,7 +68,6 @@ public class EMSServerTest {
 
     @Test
     public void testConnection() throws Exception {
-        System.out.println("Executing testConnection()");
         server.registerCommandHandler(new EchoHandler());
         out.println("ECHO:Hello there");
         String reply = in.readLine();
@@ -75,7 +76,6 @@ public class EMSServerTest {
 
     @Test
     public void testStopServer() throws Exception {
-        System.out.println("Executing testStopServer()");
         server.registerCommandHandler(new EchoHandler());
         clientSocket = new Socket("127.0.0.1", TEST_PORT);
         server.stopServer();
@@ -173,6 +173,11 @@ public class EMSServerTest {
                 msg2 = rawMessage;
             }
 
+            @Override
+            public void clientConnected(EMSServer server, String clientId) { }
+
+            @Override
+            public void clientDisconnected(EMSServer server, String clientId) { }
         };
         server.addServerSpy(spy);
         out.println("This is a test");
@@ -191,5 +196,66 @@ public class EMSServerTest {
         assertNotNull(reply);
         assertNull(msg1); // should no longer be spying
         assertNull(msg2);
+    }
+
+    @Test
+    public void testConnectDisconnectNotification() throws Exception {
+        clientsConnected = new AtomicInteger(0);
+        clientsDisconnected = new AtomicInteger(0);
+        EMSServerSpy spy = new EMSServerSpy() {
+            @Override
+            public void messageReceived(EMSServer server, String clientId, String rawMessage) { }
+
+            @Override
+            public void messageSent(EMSServer server, String clientId, String rawMessage) { }
+
+            @Override
+            public void clientConnected(EMSServer server, String clientId) {
+                clientUp();
+            }
+
+            @Override
+            public void clientDisconnected(EMSServer server, String clientId) {
+                clientDown();
+            }
+        };
+        server.addServerSpy(spy);
+
+        EMSClient client1 = new EMSClient();
+        if (! client1.connect("localhost", TEST_PORT)) {
+            throw new Exception("client1 failed to connect.");
+        }
+        client1.sendCommand("HELP");
+        client1.disconnect();
+        EMSClient client2 = new EMSClient();
+        if (! client2.connect("localhost", TEST_PORT)) {
+            throw new Exception("client2 failed to connect.");
+        }
+        client2.sendCommand("WHO");
+        client2.disconnect();
+
+        // Allow some time for the disconnect to happen:
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(100);
+            if (clientsDisconnected.get() >= 2) {
+                break;
+            }
+        }
+
+        server.stopServer();
+        while (server.isUp()) {
+            Thread.sleep(100); // give it a sec to shut down
+        }
+
+        assertEquals(2, clientsConnected.get());
+        assertEquals(2, clientsDisconnected.get());
+    }
+
+    private void clientUp() {
+        clientsConnected.incrementAndGet();
+    }
+
+    public void clientDown() {
+        clientsDisconnected.incrementAndGet();
     }
 }
