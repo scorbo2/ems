@@ -220,7 +220,7 @@ If you're using maven, you can just add it as a dependency:
   <dependency>
     <groupId>ca.corbett</groupId>
     <artifactId>ems</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
   </dependency>
 </dependencies>
 ```
