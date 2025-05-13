@@ -6,7 +6,7 @@
 
     <groupId>ca.corbett</groupId>
     <artifactId>ems</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>ems</name>
     <description>Easy Messaging Service - a lightweight embeddable API for Java applications</description>
@@ -61,7 +61,7 @@
                     <checksums>all</checksums>
                     <centralBaseUrl>https://central.sonatype.com</centralBaseUrl>
                     <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
-                    <skipPublishing>true</skipPublishing>
+                    <skipPublishing>false</skipPublishing>
                 </configuration>
             </plugin>
             <plugin>
