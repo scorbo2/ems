@@ -220,7 +220,7 @@ If you're using maven, you can just add it as a dependency:
   <dependency>
     <groupId>ca.corbett</groupId>
     <artifactId>ems</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
   </dependency>
 </dependencies>
 ```
@@ -236,3 +236,8 @@ swing-extras is made available under the MIT license: https://opensource.org/lic
 ## Revision history
 
 EMS was written as a learning project late in 2023 and was published on github in 2025.
+
+1.1 [2025-05-12]
+- moved the sub/unsub functionality from the example app into this library
+- cleaned up client disconnect handling so we actually get notified of it
+- Added a version handler with a configurable server name (stolen from the example app)

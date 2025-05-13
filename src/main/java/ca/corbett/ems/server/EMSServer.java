@@ -3,7 +3,13 @@ package ca.corbett.ems.server;
 import ca.corbett.ems.handlers.AbstractCommandHandler;
 import ca.corbett.ems.handlers.EchoHandler;
 import ca.corbett.ems.handlers.HelpHandler;
+import ca.corbett.ems.handlers.VersionHandler;
 import ca.corbett.ems.handlers.WhoHandler;
+import ca.corbett.ems.handlers.channel.ListActiveHandler;
+import ca.corbett.ems.handlers.channel.ListSubscribedHandler;
+import ca.corbett.ems.handlers.channel.SendHandler;
+import ca.corbett.ems.handlers.channel.SubscribeHandler;
+import ca.corbett.ems.handlers.channel.UnsubscribeHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,9 +83,15 @@ public class EMSServer {
     public EMSServer(String host, int port) {
         serverSpies = new ArrayList<>();
         commandHandlers = new HashSet<>();
+        commandHandlers.add(VersionHandler.getInstance());
         commandHandlers.add(new EchoHandler());
         commandHandlers.add(new HelpHandler());
         commandHandlers.add(new WhoHandler());
+        commandHandlers.add(new ListActiveHandler());
+        commandHandlers.add(new ListSubscribedHandler());
+        commandHandlers.add(new SendHandler());
+        commandHandlers.add(new SubscribeHandler());
+        commandHandlers.add(new UnsubscribeHandler());
         hostname = host;
         listeningPort = port;
     }
@@ -108,7 +120,7 @@ public class EMSServer {
      */
     public void stopServer() {
         if (serverThread == null) {
-            logger.log(Level.SEVERE, "Received a stop() command when server is not running; ignored");
+            logger.log(Level.WARNING, "Received a stop() command when server is not running; ignored");
             return;
         }
 
@@ -279,6 +291,14 @@ public class EMSServer {
      */
     public IOException getStartupException() {
         return startupException;
+    }
+
+    public int getClientConnectionCount() {
+        return serverThread == null ? 0 : serverThread.clientConnectionCount();
+    }
+
+    public boolean isClientConnected(String clientId) {
+        return serverThread != null && serverThread.isConnected(clientId);
     }
 
     /**

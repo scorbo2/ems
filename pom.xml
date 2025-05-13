@@ -6,7 +6,7 @@
 
     <groupId>ca.corbett</groupId>
     <artifactId>ems</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <name>ems</name>
     <description>Easy Messaging Service - a lightweight embeddable API for Java applications</description>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>RELEASE</version>
+            <version>5.12.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -89,6 +89,14 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- Javadoc warnings need to chill out a lot -->
+                    <additionalOptions>-Xdoclint:all -Xdoclint:-missing</additionalOptions>
+                    <additionalJOptions>
+                        <additionalJOption>-Xdoclint:all</additionalJOption>
+                        <additionalJOption>-Xdoclint:-missing</additionalJOption>
+                    </additionalJOptions>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

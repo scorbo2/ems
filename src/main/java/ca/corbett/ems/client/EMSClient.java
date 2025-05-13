@@ -11,11 +11,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Provides client access to a remote EMS server. You can either instantiate this class
+ * Provides basic client access to a remote EMS server. You can either instantiate this class
  * and use it directly if you don't mind forming the commands and parsing the raw responses
- * yourself. The alternative is to extend this class and provide more application-friendly
+ * yourself, or extend this class and provide more application-friendly
  * wrapper methods around sendCommand() and parseResponse() so that your application code
  * can interact with the remote server in a more natural way.
+ * <p>
+ *     For a more advanced client that supports channel subscriptions, see Subscriber instead.
+ * </p>
  *
  * @author scorbo2
  * @since 2023-11-18
@@ -77,12 +80,18 @@ public class EMSClient {
         if (isConnected) {
             isConnected = false;
             try {
+                if (out != null) {
+                    // Let server know we're gone; don't bother waiting for response:
+                    out.println(EMSServer.DISCONNECTED);
+                }
                 clientSocket.close();
+            } catch (IOException ioe) {
+                logger.log(Level.SEVERE, "EMSClient caught exception while disconnecting", ioe);
+            }
+            finally {
                 clientSocket = null;
                 out = null;
                 in = null;
-            } catch (IOException ioe) {
-                logger.log(Level.SEVERE, "EMSClient caught exception while disconnecting", ioe);
             }
         }
     }

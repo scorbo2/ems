@@ -27,11 +27,13 @@ class EMSServerThread extends Thread {
     private ServerSocket serverSocket;
     private volatile boolean isRunning;
     private final List<EMSServerSpy> serverSpies;
+    private int nextClientId;
 
     EMSServerThread(EMSServer server, String hostname, int port) {
         this.emsServer = server;
         this.hostname = hostname;
         this.port = port;
+        nextClientId = 0;
         clientConnections = new HashMap<>();
         serverSpies = new ArrayList<>();
     }
@@ -82,8 +84,23 @@ class EMSServerThread extends Thread {
 
         try {
             while (!isInterrupted() && isRunning) {
-                String clientId = getNextClientId();
+                final String clientId = getNextClientId();
                 EMSClientThread client = new EMSClientThread(clientId, emsServer, serverSocket.accept());
+                client.addServerSpy(new EMSServerSpy() {
+                    @Override
+                    public void messageReceived(EMSServer server, String clientId, String rawMessage) {}
+
+                    @Override
+                    public void messageSent(EMSServer server, String clientId, String rawMessage) {}
+
+                    @Override
+                    public void clientConnected(EMSServer server, String clientId) {}
+
+                    @Override
+                    public void clientDisconnected(EMSServer server, String clientId) {
+                        clientConnections.remove(clientId);
+                    }
+                });
 
                 if (isInterrupted() || !isRunning) {
                     break;
@@ -91,6 +108,7 @@ class EMSServerThread extends Thread {
 
                 // Notify server spies that a new client is starting up:
                 for (EMSServerSpy spy : serverSpies) {
+                    spy.clientConnected(emsServer, clientId);
                     client.addServerSpy(spy);
                 }
 
@@ -131,8 +149,27 @@ class EMSServerThread extends Thread {
         isRunning = false;
     }
 
-    private String getNextClientId() {
-        return EMSServer.CLIENT_ID_PREFIX + String.format("%02d", clientConnections.size());
+    /**
+     * Reports the number of active client connections.
+     *
+     * @return How many clients are currently connected.
+     */
+    public int clientConnectionCount() {
+        return clientConnections.size();
     }
 
+    /**
+     * Mostly for testing purposes, reports if the given client id is among the
+     * currently connected client list.
+     *
+     * @param clientId The string id of the client to check for.
+     * @return True if the given client id is currently connected.
+     */
+    public boolean isConnected(String clientId) {
+        return clientConnections.get(clientId) != null;
+    }
+
+    private String getNextClientId() {
+        return EMSServer.CLIENT_ID_PREFIX + String.format("%02d", nextClientId++);
+    }
 }
