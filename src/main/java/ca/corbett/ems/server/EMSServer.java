@@ -5,6 +5,11 @@ import ca.corbett.ems.handlers.EchoHandler;
 import ca.corbett.ems.handlers.HelpHandler;
 import ca.corbett.ems.handlers.VersionHandler;
 import ca.corbett.ems.handlers.WhoHandler;
+import ca.corbett.ems.handlers.channel.ListActiveHandler;
+import ca.corbett.ems.handlers.channel.ListSubscribedHandler;
+import ca.corbett.ems.handlers.channel.SendHandler;
+import ca.corbett.ems.handlers.channel.SubscribeHandler;
+import ca.corbett.ems.handlers.channel.UnsubscribeHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,6 +87,11 @@ public class EMSServer {
         commandHandlers.add(new EchoHandler());
         commandHandlers.add(new HelpHandler());
         commandHandlers.add(new WhoHandler());
+        commandHandlers.add(new ListActiveHandler());
+        commandHandlers.add(new ListSubscribedHandler());
+        commandHandlers.add(new SendHandler());
+        commandHandlers.add(new SubscribeHandler());
+        commandHandlers.add(new UnsubscribeHandler());
         hostname = host;
         listeningPort = port;
     }
